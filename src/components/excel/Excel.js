@@ -1,4 +1,5 @@
 import {$} from '../../core/dom';
+import {Emiter} from '../../core/Emiter';
 
 export class Excel {
   constructor(selector, options) {
@@ -6,6 +7,7 @@ export class Excel {
     // this.$el = document.querySelector(selector);
     this.$el = $(selector);
     this.components = options.components || [];
+    this.emiter = new Emiter();
   }
 
   getRoot() {
@@ -13,11 +15,15 @@ export class Excel {
     // const $root = document.createElement('div');
     // $root.classList.add('excel');
 
+    const componentnOptions = {
+      emiter: this.emiter
+    };
+
     this.components = this.components.map(Component => {
       // const $el = document.createElement('div');
       // $el.classList.add(Component.className);
       const $el = $.create('div', Component.className);
-      const component = new Component($el);
+      const component = new Component($el, componentnOptions);
 
       // // DEBUG
       // if (component.name) {
@@ -41,6 +47,10 @@ export class Excel {
     // node.textContent = 'TEST';
     this.$el.append(this.getRoot());
     this.components.forEach(component => component.init());
+  }
+
+  destroy() {
+    this.components.forEach(component => component.destroy());
   }
 }
 
